@@ -16,6 +16,8 @@ import (
 // can be used to connect to a queue
 type QueueConnector interface {
 	ConnectToQueue(settings QueueSettings, configSetter ...ConfigBuilder) (Queue, error)
+	// Close sends the AMQP Connection.Close handshake and closes the underlying TCP connection.
+	Close() error
 }
 
 type queueConnector struct {
@@ -95,6 +97,11 @@ func (c *queueConnector) watchChannelConnection() {
 
 func (c *queueConnector) watchChannelClosed() {
 
+}
+
+// Close sends the AMQP Connection.Close handshake and closes the underlying TCP connection.
+func (c *queueConnector) Close() error {
+	return c.connection.Close()
 }
 
 func (c *queueConnector) createChannel() error {
